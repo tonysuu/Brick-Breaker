@@ -3,13 +3,9 @@ import javax.swing.*;
 import java.awt.event.*;
 
 public class BouncingBallGame extends JPanel {
-	
-	int x = 20;
-	int y = 30;
-	int diameter = 30;
-	int dx = 1;
 	Ball ball = new Ball(this);
-	Block block = new Block(this);
+	Spring spring = new Spring(this);
+	GamePanel north = new GamePanel(5,4);
 	
 	public BouncingBallGame(){
 		addKeyListener(new KeyListener(){
@@ -19,17 +15,15 @@ public class BouncingBallGame extends JPanel {
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				System.out.println("keyPressed="+KeyEvent.getKeyText(e.getKeyCode()));
-				block.keyPressed(e);
+				spring.keyPressed(e);
 			}
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				System.out.println("keyReleased="+KeyEvent.getKeyText(e.getKeyCode()));
-				block.keyReleased(e);
+				spring.keyReleased(e);
 			}
 		});
-		setFocusable(true);	
+		setFocusable(true);
 	}
 	
 	public static void main(String[] args) throws InterruptedException{
@@ -49,13 +43,13 @@ public class BouncingBallGame extends JPanel {
 		while(true){
 			bouncing.move();
 			bouncing.repaint();
-			Thread.sleep(2);
+			Thread.sleep(3);
 		}
 	}
 	
 	public void move(){
 		ball.move();
-		block.move();;
+		spring.move();;
 	}
 	
 	@Override
@@ -63,11 +57,20 @@ public class BouncingBallGame extends JPanel {
 		super.paint(g);
 		Graphics2D g2d = (Graphics2D) g;
 		ball.paint(g2d);
-		block.paint(g2d);
+		spring.paint(g2d);
+		north.paint(g2d);
 	}
 	
 	public boolean detectCollision(){
-		return block.getRectangle().intersects(ball.getRectangle());
+		return (spring.getRectangle().intersects(ball.getRectangle()) || ball.getRectangle().intersects(spring.getRectangle()));
+	}
+	public int detectHit(){
+		for (int i = 0; i < north.blocks.size(); i++){
+			if ( north.blocks.get(i).intersects(ball.getRectangle()) || ball.getRectangle().intersects(north.blocks.get(i))){
+				return i;
+			}
+		}
+		return -1;
 	}
 	
 	public void gameOver(){
@@ -75,11 +78,13 @@ public class BouncingBallGame extends JPanel {
 		int response = JOptionPane.showOptionDialog(this, "TRY AGAIN?", "GAME OVER", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,null,options,options[0]);
 		if (response == 0){
 			ball.x = 0;
-			ball.y = 0;
-			block.x = 400;
+			ball.y = 130;
+			spring.x = 400;
+			north.getBlocks();
 		}
 		else {
 			System.exit(ABORT);
 		}
 	}
 }
+

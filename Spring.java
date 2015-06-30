@@ -1,13 +1,13 @@
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class Block {
+public class Spring {
 	int dx = 0;
 	int x = 400;
 	int length = 150;
 	BouncingBallGame game;
 	
-	public Block(BouncingBallGame game){
+	public Spring(BouncingBallGame game){
 		this.game = game;
 	}
 	public void move(){

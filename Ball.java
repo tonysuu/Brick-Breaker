@@ -3,7 +3,7 @@ import java.awt.*;
 public class Ball {
 	
 	int x = 0;
-	int y = 0;
+	int y = 130;
 	int dx = 1;
 	int dy = 1;
 	int diameter = 30;
@@ -15,8 +15,13 @@ public class Ball {
 	}
 	
 	public void move(){
+		int toRemove = game.detectHit();
 		if (game.detectCollision()){
 			dy = -1;
+		}
+		if (toRemove >= 0){
+			dy = 1;
+			game.north.removeBlock(toRemove);
 		}
 		if (x + dx < 0)
 			dx = 1;
